@@ -38,3 +38,6 @@ out/
 
 ### Private Data ###
 src/main/resources/application.properties
+logs
+data
+!src/main/kotlin/com/yiyunnetwork/hwcollector/backend/data

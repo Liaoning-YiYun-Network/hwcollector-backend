@@ -35,7 +35,7 @@ class StandardGuard : ApplicationRunner, DisposableBean {
 
         /** 保存异常访问数据到本地 */
         val abnormalIPListFile = File("./data/abnormalIPList.json")
-        applicationLogger.info("正在将abnormalIPMap中的内容写入abnormalIPMap.json文件")
+        applicationLogger.info("正在将abnormalIPMap中的内容写入abnormalIPMap.json文件...")
         runCatching {
             abnormalIPListFile.writeText(Gson().toJson(GlobalConstants.abnormalIPMap))
         }.onFailure {
