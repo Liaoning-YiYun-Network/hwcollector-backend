@@ -1,6 +1,7 @@
 package com.yiyunnetwork.hwcollector.backend.data
 
 import jakarta.persistence.*
+import java.sql.Date
 
 @Entity(name = "hw_info")
 class HomeworkInfo {
@@ -15,7 +16,7 @@ class HomeworkInfo {
     var hwId: Long? = null
 
     @Column(name = "class_id", nullable = false)
-    var hwClass: Int? = null
+    var classId: Int? = null
 
     @Column(name = "title", nullable = false)
     var hwTitle: String? = null
@@ -24,5 +25,7 @@ class HomeworkInfo {
     var hwContent: String? = null
 
     @Column(name = "ddl_date", nullable = false)
-    var hwDdlDate: String? = null
+    var hwDdlDate: Date? = null
+
+    var isSubmitted: Boolean = false
 }

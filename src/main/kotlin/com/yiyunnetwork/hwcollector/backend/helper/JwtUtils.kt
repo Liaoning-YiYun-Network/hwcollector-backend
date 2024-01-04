@@ -37,14 +37,13 @@ class JwtUtils {
     /**
      * 使用Jwt组件解析token
      *
-     * @return 返回Pair，第一个元素为用户名，第二个元素为token是否有效（是否在有效期内）
+     * @return token的主体部分，即它的所有人
      */
-    fun parseToken(token: String): Pair<String, Boolean> {
+    fun parseToken(token: String): String {
         val jwtParser = Jwts.parser()
         jwtParser.setSigningKey(SIGNING_KEY)
         val claims = jwtParser.parseClaimsJws(token)
         val username = claims.body.subject
-        val expire = claims.body.expiration
-        return Pair(username, expire.after(Date()))
+        return username
     }
 }
