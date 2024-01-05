@@ -8,5 +8,9 @@ data class LoginResponseData(
     @SerializedName("msg")
     val msg: String,
     @SerializedName("token")
-    val token: String = ""
+    val token: String = "",
+    @SerializedName("is_manager")
+    val isManager: Boolean = false,
+    @SerializedName("is_admin")
+    val isAdmin: Boolean = false
 )

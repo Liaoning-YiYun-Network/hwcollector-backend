@@ -24,11 +24,14 @@ class Student {
     @ExcelProperty("姓名")
     var realName: String? = null
 
-    @Column(name = "no")
+    @Column(name = "no", unique = true, nullable = false)
     @ExcelProperty("学号")
     var stuNo: String? = null
 
-    @Column(name = "class_id")
+    @ExcelProperty("班级")
+    var className: String? = null
+
+    @Column(name = "class_id", nullable = false)
     @ExcelIgnore
     var stuClassId: Int? = null
 

@@ -46,7 +46,7 @@ class LoginController {
                 redisTemplate.opsForValue().set(bean.stuName, it, Duration.ofMinutes(10))
                 it
             }
-        return Gson().toJson(LoginResponseData(200, "登录成功！", token))
+        return Gson().toJson(LoginResponseData(200, "登录成功！", token, student.isManager, student.isAdmin))
     }
 
 }
