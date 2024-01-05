@@ -2,7 +2,6 @@ package com.yiyunnetwork.hwcollector.backend.controller
 
 import com.google.gson.Gson
 import com.yiyunnetwork.hwcollector.backend.GlobalConstants.downloadInfoMap
-import com.yiyunnetwork.hwcollector.backend.data.bean.send.HwInfoResponseData
 import com.yiyunnetwork.hwcollector.backend.data.bean.send.QueueDownloadData
 import com.yiyunnetwork.hwcollector.backend.data.bean.send.SimpleResponseData
 import com.yiyunnetwork.hwcollector.backend.helper.JwtUtils
@@ -47,19 +46,19 @@ class DownloadSessionController(private val request: HttpServletRequest, private
     fun main(@RequestParam(name = "hwId") hwId: String, @RequestParam(name = "token") token: String): String {
         // 尝试解析token
         val stuName = runCatching { jwtUtils.parseToken(token) }.getOrElse {
-            return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+            return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(HwInfoResponseData(400, "token不存在！"))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(QueueDownloadData(400, "token不存在！", null))
         // 检查token是否正确
         if (token != redisToken) {
-            return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+            return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
         }
         // 查询学生信息
-        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(HwInfoResponseData(400, "学生信息不存在！"))
+        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(QueueDownloadData(400, "学生信息不存在！", null))
         // 检查学生是否为管理员
         if (!student.isManager) {
-            return Gson().toJson(HwInfoResponseData(403, "您不是管理员，无法使用此功能！"))
+            return Gson().toJson(QueueDownloadData(403, "您不是管理员，无法使用此功能！", null))
         }
         // 尝试将hwId转换为Int
         val hwIdInt = hwId.toIntOrNull()
