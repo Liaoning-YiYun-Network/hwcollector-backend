@@ -36,6 +36,10 @@ class Student {
     @ExcelProperty("是否为管理员")
     var isManager: Boolean = false
 
+    @Column(name = "is_admin")
+    @ExcelIgnore
+    var isAdmin: Boolean = false
+
     override fun toString(): String {
         return "Student(real_name=$realName, stu_no=$stuNo, stu_class_id=$stuClassId, is_manager=$isManager)"
     }
