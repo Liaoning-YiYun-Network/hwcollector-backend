@@ -29,7 +29,9 @@ class LoginController {
 
     @PostMapping("/login")
     fun main(@RequestBody data: String): String {
-        val bean = Gson().fromJson(data, LoginBean::class.java)
+        val bean = runCatching { Gson().fromJson(data, LoginBean::class.java) }.getOrElse {
+            return Gson().toJson(LoginResponseData(400, "请求异常！"))
+        }
         if (bean.stuName == null || bean.stuNo == null) {
             return Gson().toJson(LoginResponseData(400, "学生名称或学号为空！"))
         }
