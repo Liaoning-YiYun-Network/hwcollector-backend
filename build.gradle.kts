@@ -52,6 +52,8 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:2.3.1")
     // easyexcel
     implementation("com.alibaba:easyexcel:3.3.2")
+    // 协程
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
 }
 
