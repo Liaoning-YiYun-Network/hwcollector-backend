@@ -2,14 +2,18 @@ package com.yiyunnetwork.hwcollector.backend.controller
 
 import com.google.gson.Gson
 import com.yiyunnetwork.hwcollector.backend.GlobalConstants.downloadInfoMap
+import com.yiyunnetwork.hwcollector.backend.data.bean.send.HwInfoResponseData
 import com.yiyunnetwork.hwcollector.backend.data.bean.send.QueueDownloadData
 import com.yiyunnetwork.hwcollector.backend.data.bean.send.SimpleResponseData
+import com.yiyunnetwork.hwcollector.backend.helper.JwtUtils
 import com.yiyunnetwork.hwcollector.backend.helper.ZipUtil
 import com.yiyunnetwork.hwcollector.backend.repository.HomeworkInfoRepository
+import com.yiyunnetwork.hwcollector.backend.repository.StudentRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.web.bind.annotation.*
 import java.io.File
 import kotlin.jvm.optionals.getOrNull
@@ -22,6 +26,15 @@ class DownloadSessionController(private val request: HttpServletRequest, private
     lateinit var zipUtil: ZipUtil
 
     @Autowired
+    lateinit var jwtUtils: JwtUtils
+
+    @Autowired
+    lateinit var redisTemplate: RedisTemplate<String, String>
+
+    @Autowired
+    lateinit var stuRepository: StudentRepository
+
+    @Autowired
     lateinit var hwInfoRepository: HomeworkInfoRepository
 
     @Value("\${server.endpoint}")
@@ -31,7 +44,23 @@ class DownloadSessionController(private val request: HttpServletRequest, private
      * 用于添加下载任务
      */
     @PostMapping("/queue_download")
-    fun main(@RequestParam(name = "hwId") hwId: String): String {
+    fun main(@RequestParam(name = "hwId") hwId: String, @RequestParam(name = "token") token: String): String {
+        // 尝试解析token
+        val stuName = runCatching { jwtUtils.parseToken(token) }.getOrElse {
+            return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+        }
+        // 检查token是否存在
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(HwInfoResponseData(400, "token不存在！"))
+        // 检查token是否正确
+        if (token != redisToken) {
+            return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+        }
+        // 查询学生信息
+        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(HwInfoResponseData(400, "学生信息不存在！"))
+        // 检查学生是否为管理员
+        if (!student.isManager) {
+            return Gson().toJson(HwInfoResponseData(403, "您不是管理员，无法使用此功能！"))
+        }
         // 尝试将hwId转换为Int
         val hwIdInt = hwId.toIntOrNull()
             ?: // 如果转换失败，返回错误
@@ -88,10 +117,6 @@ class DownloadSessionController(private val request: HttpServletRequest, private
         val hwIdInt = hwId.toIntOrNull()
             ?: // 如果转换失败，返回错误
             return Gson().toJson(SimpleResponseData(400, "hwId is not a number"))
-        // 判断对应的作业是否存在
-        val hwInfo = hwInfoRepository.findById(hwIdInt).getOrNull()
-            ?: // 如果不存在，返回错误
-            return Gson().toJson(SimpleResponseData(400, "hwId is not exist"))
         // 判断对应的作业是否已经提交过打包请求
         downloadInfoMap[hwIdInt]?.let {
             if (it.second) {
