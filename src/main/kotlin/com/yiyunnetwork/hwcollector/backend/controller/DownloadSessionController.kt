@@ -49,7 +49,7 @@ class DownloadSessionController(private val request: HttpServletRequest, private
             return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(QueueDownloadData(400, "token不存在！", null))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))

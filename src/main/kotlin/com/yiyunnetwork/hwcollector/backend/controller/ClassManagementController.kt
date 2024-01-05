@@ -38,7 +38,7 @@ class ClassManagementController {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(SimpleResponseData(400, "token不存在！"))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
@@ -68,7 +68,7 @@ class ClassManagementController {
             return Gson().toJson(ClassesInfoData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(ClassesInfoData(400, "token不存在！"))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(ClassesInfoData(400, "登录信息异常，请重新登录！"))
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(ClassesInfoData(400, "登录信息异常，请重新登录！"))
@@ -93,7 +93,7 @@ class ClassManagementController {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(SimpleResponseData(400, "token不存在！"))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
@@ -122,7 +122,7 @@ class ClassManagementController {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(SimpleResponseData(400, "token不存在！"))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
