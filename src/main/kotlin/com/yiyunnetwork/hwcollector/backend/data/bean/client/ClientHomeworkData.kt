@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName
 import com.yiyunnetwork.hwcollector.backend.data.HomeworkInfo
 
 data class ClientHomeworkData(
+    @SerializedName("id")
+    val id: Int,
     @SerializedName("title")
     val title: String,
     @SerializedName("content")
@@ -15,6 +17,7 @@ data class ClientHomeworkData(
 )
 
 fun HomeworkInfo.toClientHomeworkData() = ClientHomeworkData(
+    id = hwId!!.toInt(),
     title = hwTitle!!,
     content = hwContent!!,
     deadline = hwDdlDate!!.toString(),

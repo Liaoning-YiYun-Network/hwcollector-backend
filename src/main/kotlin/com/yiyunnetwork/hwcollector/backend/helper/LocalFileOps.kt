@@ -1,5 +1,6 @@
 package com.yiyunnetwork.hwcollector.backend.helper
 
+import com.yiyunnetwork.hwcollector.backend.data.bean.client.ClientStudentHwStateData
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
@@ -69,6 +70,48 @@ class LocalFileOps {
     fun deleteHomework(homeworkId: Long, stuName: String, stuNo: String): Boolean {
         // 判断学生作业的文件夹是否存在
         val stuHomeworkDir = File("./collect-files/$homeworkId/$stuName-$stuNo")
+        if (!stuHomeworkDir.exists()) {
+            // 不存在则返回删除成功
+            return true
+        }
+        // 删除文件夹
+        return stuHomeworkDir.deleteRecursively()
+    }
+
+    /**
+     * 获取指定ID的作业的已提交学生列表
+     *
+     * 存储逻辑为：./collect-files/作业ID/学生姓名-学生学号
+     *
+     * @param homeworkId 作业ID
+     * @return 已提交学生列表
+     */
+    fun getSubmittedStudents(homeworkId: Long): List<ClientStudentHwStateData> {
+        // 判断学生作业的文件夹是否存在
+        val stuHomeworkDir = File("./collect-files/$homeworkId")
+        if (!stuHomeworkDir.exists()) {
+            // 不存在则返回空列表
+            return emptyList()
+        }
+        // 获取文件夹下的所有文件夹
+        return stuHomeworkDir.listFiles()?.filter { it.isDirectory }?.map {
+            val stuName = it.name.substringBefore("-")
+            val stuNo = it.name.substringAfter("-")
+            ClientStudentHwStateData(stuName, stuNo)
+        } ?: emptyList()
+    }
+
+    /**
+     * 删除指定ID的作业
+     *
+     * 存储逻辑为：./collect-files/作业ID
+     *
+     * @param homeworkId 作业ID
+     * @return 是否删除成功
+     */
+    fun removeHomework(homeworkId: Long): Boolean {
+        // 判断学生作业的文件夹是否存在
+        val stuHomeworkDir = File("./collect-files/$homeworkId")
         if (!stuHomeworkDir.exists()) {
             // 不存在则返回删除成功
             return true

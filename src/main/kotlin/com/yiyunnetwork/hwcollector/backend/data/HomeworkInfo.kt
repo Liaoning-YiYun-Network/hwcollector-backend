@@ -1,7 +1,7 @@
 package com.yiyunnetwork.hwcollector.backend.data
 
 import jakarta.persistence.*
-import java.sql.Date
+import java.util.*
 
 @Entity(name = "hw_info")
 class HomeworkInfo {
@@ -10,7 +10,7 @@ class HomeworkInfo {
     @Column(
         name = "id",
         unique = true,
-        nullable = false
+        nullable = true
     )
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var hwId: Long? = null
