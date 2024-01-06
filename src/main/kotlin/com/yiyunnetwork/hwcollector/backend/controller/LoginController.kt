@@ -44,8 +44,8 @@ class LoginController {
         }
         // 信息正确，查找redis中是否存在token，存在则返回，不存在则创建
         val token = redisTemplate.opsForValue().get(bean.stuName)
-            ?: jwtUtils.generateToken(bean.stuName, Duration.ofMinutes(10).toMillis()).let {
-                redisTemplate.opsForValue().set(bean.stuName, it, Duration.ofMinutes(10))
+            ?: jwtUtils.generateToken(bean.stuName, Duration.ofHours(24).toMillis()).let {
+                redisTemplate.opsForValue().set(bean.stuName, it, Duration.ofHours(24))
                 it
             }
         return Gson().toJson(LoginResponseData(200, "登录成功！", token, student.isManager, student.isAdmin))
