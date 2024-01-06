@@ -1,4 +1,4 @@
-package com.yiyunnetwork.hwcollector.listener
+package com.yiyunnetwork.hwcollector.backend.listener
 
 import com.google.gson.Gson
 import com.yiyunnetwork.hwcollector.backend.EnvOptions.IS_LOCAL_BUILD
