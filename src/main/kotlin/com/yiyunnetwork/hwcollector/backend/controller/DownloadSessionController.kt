@@ -49,13 +49,25 @@ class DownloadSessionController(private val request: HttpServletRequest, private
             return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(
+            QueueDownloadData(
+                400,
+                "登录信息异常，请重新登录！",
+                null
+            )
+        )
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(QueueDownloadData(400, "登录信息异常，请重新登录！", null))
         }
         // 查询学生信息
-        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(QueueDownloadData(400, "学生信息不存在！", null))
+        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(
+            QueueDownloadData(
+                400,
+                "学生信息不存在！",
+                null
+            )
+        )
         // 检查学生是否为管理员
         if (!student.isManager) {
             return Gson().toJson(QueueDownloadData(403, "您不是管理员，无法使用此功能！", null))
@@ -71,11 +83,20 @@ class DownloadSessionController(private val request: HttpServletRequest, private
         // 判断对应的作业是否已经提交过打包请求
         downloadInfoMap[hwIdInt]?.let {
             if (it.second) {
-                return Gson().toJson(QueueDownloadData(400, "打包任务已完成，有效期内请勿重复提交",
-                    "$serverEndpoint/api/download/$hwId"
-                ))
+                return Gson().toJson(
+                    QueueDownloadData(
+                        400, "打包任务已完成，有效期内请勿重复提交",
+                        "$serverEndpoint/api/download/$hwId"
+                    )
+                )
             } else {
-                return Gson().toJson(QueueDownloadData(400, "打包任务正在进行中，请勿重复提交", "$serverEndpoint/api/download/$hwId"))
+                return Gson().toJson(
+                    QueueDownloadData(
+                        400,
+                        "打包任务正在进行中，请勿重复提交",
+                        "$serverEndpoint/api/download/$hwId"
+                    )
+                )
             }
         }
         // 如果存在，拉起一个线程对作业进行打包
@@ -104,7 +125,13 @@ class DownloadSessionController(private val request: HttpServletRequest, private
                 File("$hwZipPath/$hwZipName").delete()
             }.start()
         }.start()
-        return Gson().toJson(QueueDownloadData(200, "打包任务已提交，请5-10分钟后使用链接下载！", "$serverEndpoint/api/download/$hwId"))
+        return Gson().toJson(
+            QueueDownloadData(
+                200,
+                "打包任务已提交，请5-10分钟后使用链接下载！",
+                "$serverEndpoint/api/download/$hwId"
+            )
+        )
     }
 
     /**

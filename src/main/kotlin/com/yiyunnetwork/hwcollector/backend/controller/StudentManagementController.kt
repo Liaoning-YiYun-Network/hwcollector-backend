@@ -37,8 +37,9 @@ class StudentManagementController {
      * 用于添加学生
      */
     @PostMapping("/add_students")
-    fun add(@RequestParam(name = "stuName") stuName: String, @RequestParam(name = "stuNo") stuNo: String,
-            @RequestParam(name = "stuClass") stuClass: String? = null, @RequestParam(name = "token") token: String
+    fun add(
+        @RequestParam(name = "stuName") stuName: String, @RequestParam(name = "stuNo") stuNo: String,
+        @RequestParam(name = "stuClass") stuClass: String? = null, @RequestParam(name = "token") token: String
     ): String {
         // 检查学生姓名是否为2-3个汉字
         if (!stuName.matches(Regex("[\\u4e00-\\u9fa5]{2,3}"))) {
@@ -53,13 +54,23 @@ class StudentManagementController {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
+        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(
+            SimpleResponseData(
+                400,
+                "登录信息异常，请重新登录！"
+            )
+        )
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 查询学生信息
-        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(SimpleResponseData(400, "学生信息不存在！"))
+        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(
+            SimpleResponseData(
+                400,
+                "学生信息不存在！"
+            )
+        )
         // 检查学生是否为管理员
         if (!user.isManager) {
             return Gson().toJson(SimpleResponseData(403, "权限不足，无法使用此功能！"))
@@ -75,7 +86,7 @@ class StudentManagementController {
                 return Gson().toJson(SimpleResponseData(400, "班级不能为空！"))
             }
             val classInfo = classInfoRepository.findAll().find { it.className == stuClass }
-                    ?: return Gson().toJson(SimpleResponseData(400, "班级不存在！"))
+                ?: return Gson().toJson(SimpleResponseData(400, "班级不存在！"))
             // 添加学生
             stuRepository.save(Student().apply {
                 this.realName = stuName
@@ -104,20 +115,30 @@ class StudentManagementController {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
+        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(
+            SimpleResponseData(
+                400,
+                "登录信息异常，请重新登录！"
+            )
+        )
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 查询学生信息
-        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(SimpleResponseData(400, "学生信息不存在！"))
+        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(
+            SimpleResponseData(
+                400,
+                "学生信息不存在！"
+            )
+        )
         // 检查学生是否为管理员
         if (!user.isManager) {
             return Gson().toJson(SimpleResponseData(403, "权限不足，无法使用此功能！"))
         }
         // 获取学生所在班级的信息
         val classInfo = classInfoRepository.findById(user.stuClassId!!).getOrNull()
-                ?: return Gson().toJson(SimpleResponseData(400, "班级信息不存在！"))
+            ?: return Gson().toJson(SimpleResponseData(400, "班级信息不存在！"))
         val currentAllStudents = stuRepository.findAll().toMutableList()
         // 使用EasyExcel读取文件
         EasyExcel.read(file.inputStream, Student::class.java, object : ReadListener<Student> {
@@ -167,7 +188,7 @@ class StudentManagementController {
                         data.stuClassId = it
                     } ?: run {
                         val cInfo = classInfoRepository.findAll().find { it.className == data.className }
-                                ?: return
+                            ?: return
                         cachedClassMap = cachedClassMap.plus(data.className!! to classInfo.classId!!)
                         data.stuClassId = cInfo.classId
                     }
@@ -201,13 +222,19 @@ class StudentManagementController {
             return Gson().toJson(StuInfoData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(StuInfoData(400, "登录信息异常，请重新登录！"))
+        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(
+            StuInfoData(
+                400,
+                "登录信息异常，请重新登录！"
+            )
+        )
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(StuInfoData(400, "登录信息异常，请重新登录！"))
         }
         // 查询学生信息
-        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(StuInfoData(400, "学生信息不存在！"))
+        val user =
+            stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(StuInfoData(400, "学生信息不存在！"))
         // 检查学生是否为管理员
         if (!user.isManager) {
             return Gson().toJson(StuInfoData(403, "权限不足，无法使用此功能！"))
@@ -215,7 +242,13 @@ class StudentManagementController {
         return if (user.isAdmin) {
             Gson().toJson(StuInfoData(200, "查询成功！", stuRepository.findAll().toList()))
         } else {
-            Gson().toJson(StuInfoData(200, "查询成功！", stuRepository.findAll().filter { it.stuClassId == user.stuClassId }.toList()))
+            Gson().toJson(
+                StuInfoData(
+                    200,
+                    "查询成功！",
+                    stuRepository.findAll().filter { it.stuClassId == user.stuClassId }.toList()
+                )
+            )
         }
     }
 
@@ -223,20 +256,32 @@ class StudentManagementController {
      * 用于删除学生
      */
     @DeleteMapping("/delete_students")
-    fun delete(@RequestParam(name = "token") token: String, @RequestParam(name = "stuName") stuName: String,
-               @RequestParam(name = "stuNo") stuNo: String): String {
+    fun delete(
+        @RequestParam(name = "token") token: String, @RequestParam(name = "stuName") stuName: String,
+        @RequestParam(name = "stuNo") stuNo: String
+    ): String {
         // 尝试解析token
         val userName = runCatching { jwtUtils.parseToken(token) }.getOrElse {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
+        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(
+            SimpleResponseData(
+                400,
+                "登录信息异常，请重新登录！"
+            )
+        )
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(SimpleResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 查询学生信息
-        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(SimpleResponseData(400, "学生信息不存在！"))
+        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(
+            SimpleResponseData(
+                400,
+                "学生信息不存在！"
+            )
+        )
         // 检查学生是否为管理员
         if (!user.isManager) {
             return Gson().toJson(SimpleResponseData(403, "权限不足，无法使用此功能！"))
@@ -245,7 +290,7 @@ class StudentManagementController {
         if (user.isAdmin) {
             // 从数据库中查询被删除的学生
             val stu = stuRepository.findAll().find { it.realName == stuName && it.stuNo == stuNo }
-                    ?: return Gson().toJson(SimpleResponseData(400, "学生不存在！"))
+                ?: return Gson().toJson(SimpleResponseData(400, "学生不存在！"))
             // 检查学生是否为超级管理员
             if (stu.isAdmin) {
                 return Gson().toJson(SimpleResponseData(400, "无法删除超级管理员！"))

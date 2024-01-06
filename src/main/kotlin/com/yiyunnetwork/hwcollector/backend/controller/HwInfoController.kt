@@ -41,13 +41,23 @@ class HwInfoController {
             return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 检查token是否存在
-        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+        val redisToken = redisTemplate.opsForValue().get(stuName) ?: return Gson().toJson(
+            HwInfoResponseData(
+                400,
+                "登录信息异常，请重新登录！"
+            )
+        )
         // 检查token是否正确
         if (token != redisToken) {
             return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
         }
         // 查询学生信息
-        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(HwInfoResponseData(400, "学生信息不存在！"))
+        val student = stuRepository.findById(stuName).getOrNull() ?: return Gson().toJson(
+            HwInfoResponseData(
+                400,
+                "学生信息不存在！"
+            )
+        )
         // 查询学生所在班级的作业信息, 并检查是否已经提交
         val hwInfo = hwInfoRepository.findAll().filter { it.classId == student.stuClassId }.map {
             if (localFileOps.isHomeworkExist(it.hwId!!, stuName, student.stuNo!!)) {
