@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 @RequestMapping("/api")
@@ -63,8 +64,14 @@ class HwInfoController {
             if (localFileOps.isHomeworkExist(it.hwId!!, stuName, student.stuNo!!)) {
                 it.isSubmitted = true
             }
+            // 检查是否已经截止，如果已经截止，则不返回
+            it.hwDdlDate?.let { ddl ->
+                if (ddl.before(Date())) {
+                    return@map null
+                }
+            }
             it
-        }
+        }.filterNotNull()
         return Gson().toJson(HwInfoResponseData(200, "查询成功！", hwInfo.map { it.toClientHomeworkData() }))
     }
 }
