@@ -3,6 +3,8 @@ package com.yiyunnetwork.hwcollector.backend.controller
 import com.google.gson.Gson
 import com.yiyunnetwork.hwcollector.backend.data.HomeworkInfo
 import com.yiyunnetwork.hwcollector.backend.data.bean.client.ClientStudentHwStateData
+import com.yiyunnetwork.hwcollector.backend.data.bean.client.toClientHomeworkData
+import com.yiyunnetwork.hwcollector.backend.data.bean.send.HwInfoResponseData
 import com.yiyunnetwork.hwcollector.backend.data.bean.send.QueryHwReportData
 import com.yiyunnetwork.hwcollector.backend.data.bean.send.SimpleResponseData
 import com.yiyunnetwork.hwcollector.backend.helper.JwtUtils
@@ -81,6 +83,49 @@ class HomeworkManagementController {
         // 保存作业信息
         hwInfoRepository.save(hwInfo)
         return Gson().toJson(SimpleResponseData(200, "发布成功！"))
+    }
+
+    /**
+     * 用于查询作业，如果是超级管理员，则查询全部作业，否则查询自己班级的作业
+     */
+    @PostMapping("/query_hw")
+    fun queryHw(@RequestParam(name = "token") token: String): String {
+        // 尝试解析token
+        val userName = runCatching { jwtUtils.parseToken(token) }.getOrElse {
+            return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+        }
+        // 检查token是否存在
+        val redisToken = redisTemplate.opsForValue().get(userName) ?: return Gson().toJson(
+            HwInfoResponseData(
+                400,
+                "登录信息异常，请重新登录！"
+            )
+        )
+        // 检查token是否正确
+        if (token != redisToken) {
+            return Gson().toJson(HwInfoResponseData(400, "登录信息异常，请重新登录！"))
+        }
+        // 查询学生信息
+        val user = stuRepository.findById(userName).getOrNull() ?: return Gson().toJson(
+            HwInfoResponseData(
+                400,
+                "学生信息不存在！"
+            )
+        )
+        // 判断是否为管理员
+        if (!user.isManager) {
+            return Gson().toJson(HwInfoResponseData(403, "权限不足！"))
+        }
+        // 如果是超级管理员，直接查询全部作业，否则查询自己班级的作业
+        if (!user.isAdmin) {
+            // 查询作业信息
+            val hwInfo = hwInfoRepository.findAll().filter { it.classId == user.stuClassId }
+            return Gson().toJson(HwInfoResponseData(200, "查询成功！", hwInfo.map { it.toClientHomeworkData() }))
+        } else {
+            // 查询作业信息
+            val hwInfo = hwInfoRepository.findAll()
+            return Gson().toJson(HwInfoResponseData(200, "查询成功！", hwInfo.map { it.toClientHomeworkData() }))
+        }
     }
 
     /**
