@@ -40,4 +40,4 @@ out/
 src/main/resources/application.properties
 logs
 data
-!src/main/kotlin/com/yiyunnetwork/hwcollector/backend/data
+!src/main/kotlin/com/yiyunnetwork/fcollector/backend/data
